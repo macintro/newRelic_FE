@@ -23,98 +23,104 @@ const companyOptions = [
 ];
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: originalData,
-      columns: [],
-      searchInput: "",
-      selectedCompany: ""
-    };
-  }
-
-  
-
-  componentDidMount() {
-    let columns = [
-      {
-        Header: "First Name",
-        accessor: "firstName",
-        sortable: true,
-        show: true,
-        displayValue: " First Name"
-      },
-      {
-        Header: "Last Name",
-        accessor: "lastName",
-        sortable: true,
-        show: true,
-        displayValue: "Last Name "
-      },
-      {
-        Header: "Company",
-        accessor: "company",
-        sortable: true,
-        show: true,
-        displayValue: " Company "
+    constructor(props) {
+        super(props);
+        this.state = {
+          data: [],
+          columns: [
+            {
+              Header: "First Name",
+              accessor: "fName",
+              sortable: true,
+              show: true,
+              displayValue: " First Name"
+            },
+            {
+              Header: "Last Name",
+              accessor: "lName",
+              sortable: true,
+              show: true,
+              displayValue: "Last Name "
+            },
+            {
+              Header: "Company",
+              accessor: "companyName",
+              sortable: true,
+              show: true,
+              displayValue: " Company "
+            }
+          ],
+          searchInput: "",
+          selectedCompany: ""
+        };
       }
-    ];
-    this.setState({ columns });
-    originalData = [
-        { firstName: "Marcos", lastName: "Pending", company: 155 },
-        { firstName: "James", lastName: "Pending", company: 155 },
-        { firstName: "Juanita", lastName: "Approved", company: 1785 },
-        { firstName: "Gabby", lastName: "Approved", company: 175 },
-        { firstName: "adaSaaa", lastName: "Cancelled", company: 165 },
-        { firstName: "aasaaa", lastName: "Cancelled", company: 157 },
-        { firstName: "aweaaaaaewea", lastName: "Approved", company: 153 },
-        { firstName: "aaaaaa", lastName: "Submitted", company: 155 },
-        { firstName: "aaaeweaa", lastName: "Pending", company: 1555 },
-        { firstName: "aabFaa", lastName: "Submitted", company: 155 },
-        { firstName: "adaAAadsdweaa", lastName: "Approved", company: 17585 },
-        { firstName: "aAaaaa", lastName: "Approved", company: 175 }
-        ];
-
-  }
-
-    handleSubmit = async (e) => {
+    
+      componentDidMount() {
+        this.fetchInitialData();
+      }
+    
+      fetchInitialData = async () => {
+        try {
+          const response = await customerLookUp(""); // Fetch initial data, pass empty string or default search term
+    
+          if (response.status === 200) {
+            this.setState({
+              data: response.data  // Assuming response.data contains the initial data
+            }, () => {
+              this.globalSearch();  // Trigger globalSearch after updating state if needed
+            });
+          } else {
+            toast.error('Failed to fetch initial data');
+          }
+        } catch (error) {
+          console.error('Error fetching initial data:', error);
+          toast.error('Failed to fetch initial data');
+        }
+      };
+    
+      handleInputChange = (e) => {
+        this.setState({ searchInput: e.target.value });
+      };
+    
+      handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await customerLookUp(e.target.value);
-        
-        if (response?.status === 201) {
-        toast.success('Thank you for your interest in Fixadera! Use your email on your first scheduled session and you will receive 20% off!');
-
+        const { searchInput } = this.state;
+       
+        try {
+          const response = await customerLookUp(searchInput);
+          if (response.status === 200) {
+            this.setState({
+              data: response.data  // Update data state with search results
+            }, () => {
+              this.globalSearch();  // Trigger globalSearch after updating state
+            });
+          } else {
+            toast.error('No data could be loaded');
+          }
+        } catch (error) {
+          console.error('Error searching:', error);
+          toast.error('Failed to search');
         }
-        else if (response?.status === 401) {
-        toast.error('A cupon is already associated with this e-mail. No e-mail is sent. Simply use the same e-mail you entered to automatically recieve the discount.');
-        }
-        else{
-        toast.error('Unable to give cupon. Please try again.');
-        }
-        
-        this.setState({ searchInput: e.target.value }, () => {
-        this.globalSearch();
+      };
+    
+      handleCompanyChange = (e, { value }) => {
+        this.setState({ selectedCompany: value }, () => {
+          this.globalSearch();
         });
-  };
-
-  handleCompanyChange = (e, { value }) => {
-    this.setState({ selectedCompany: value }, () => {
-      this.globalSearch();
-    });
-  };
-
-  globalSearch = () => {
-    let { searchInput, selectedCompany } = this.state;
-    let filteredData = originalData.filter(value => {
-      return (
-        (value.firstName.toLowerCase().includes(searchInput.toLowerCase()) ||
-        value.lastName.toLowerCase().includes(searchInput.toLowerCase())) &&
-        (!selectedCompany || value.company.toString() === selectedCompany.toString())
-      );
-    });
-    this.setState({ data: filteredData });
-  };
-
+      };
+    
+      globalSearch = () => {
+        let { searchInput, selectedCompany, data } = this.state;
+        let filteredData = data.filter(value => {
+          return (
+            (value.fName?.toLowerCase().includes(searchInput?.toLowerCase()) ||
+            value.lName?.toLowerCase().includes(searchInput?.toLowerCase())) &&
+            (!selectedCompany || value.companyName.toString() === selectedCompany.toString())
+          );
+        });
+        this.setState({ data: filteredData });
+      };
+    
   render() {
     let { data, columns, searchInput, selectedCompany } = this.state;
     return (
@@ -125,7 +131,7 @@ export default class App extends React.Component {
             size="large"
             name="searchInput"
             value={searchInput || ""}
-            
+            onChange={this.handleInputChange}
             label="Search"
             placeholder="Search by first or last name"
           />
