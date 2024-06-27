@@ -1,0 +1,38 @@
+/* CustomerSearchPage.module.css */
+
+.table {
+    border: solid 1px blue;
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px;
+    border: solid 1px gray;
+    color: black; /* Ensures the text color is black */
+    background-color: white; /* Ensures the background color is white */
+  }
+  
+  .table th {
+    cursor: pointer;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .pagination a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    text-decoration: none;
+    color: black;
+  }
+  
+  .pagination a.active {
+    background-color: gray;
+    color: white;
+  }
+  
