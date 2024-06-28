@@ -17,9 +17,30 @@ export async function customerLookUp(searchTerm) {
       })
       .catch((err) => {
         if (err?.response?.status === 401) {
-          return { status: 401, message: 'E-mail already has cupon' };
+          return { status: 401, message: 'Error fetching data' };
         }
         return { status: 500, message: 'System issue' };
       });
 }
 
+
+export async function companyLookUp(searchTerm) {
+    const url = `${ctxValue('SEARCH_SERVICE')}/customers/getCompanyByName`;
+    return axios
+      .get(url, {
+        params: { searchTerm },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ctxValue('API_KEY'),
+        },
+      })
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          return { status: 401, message: 'Error fetching data' };
+        }
+        return { status: 500, message: 'System issue' };
+      });
+}

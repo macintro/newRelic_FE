@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Input, Dropdown, Button } from "semantic-ui-react";
-import { customerLookUp } from '../../utils/services';
+import { customerLookUp,companyLookUp } from '../../utils/services';
 import ReactTable from "react-table-6";
 import "react-table-6/react-table.css";
 import 'semantic-ui-css/semantic.min.css';
@@ -9,18 +9,7 @@ import "./CustomerSearchPage.module.css";
 import toast from 'react-hot-toast';
 
 var originalData = [];
-
-
-const companyOptions = [
-  { key: 155, value: 155, text: 'Company 155' },
-  { key: 1785, value: 1785, text: 'Company 1785' },
-  { key: 175, value: 175, text: 'Company 175' },
-  { key: 165, value: 165, text: 'Company 165' },
-  { key: 157, value: 157, text: 'Company 157' },
-  { key: 153, value: 153, text: 'Company 153' },
-  { key: 1555, value: 1555, text: 'Company 1555' },
-  { key: 17585, value: 17585, text: 'Company 17585' }
-];
+var companyOptions = [];
 
 export default class App extends React.Component {
     constructor(props) {
@@ -51,12 +40,14 @@ export default class App extends React.Component {
             }
           ],
           searchInput: "",
-          selectedCompany: ""
+          selectedCompany: "",
+          companyOptions: []   // State to store options for the dropdown
         };
       }
     
       componentDidMount() {
         this.fetchInitialData();
+        this.fetchCompanyOptions();
       }
     
       fetchInitialData = async () => {
@@ -77,9 +68,38 @@ export default class App extends React.Component {
           toast.error('Failed to fetch initial data');
         }
       };
+
+      fetchCompanyOptions = async () => {
+        try {
+          const response = await companyLookUp(""); 
+          
+          if (response.status === 200) {
+
+             
+            // Map response data to match Semantic UI Dropdown options format
+            const options = response.data.map(company => ({
+              key: company.id,  // Assuming companyId or a unique identifier
+              value: company.companyName,
+              text: company.companyName
+            }));
+            // Add a default option
+            const defaultOption = { key: 'default', value: '', text: 'Select a Company' };
+            options.unshift(defaultOption);
+            this.setState({ companyOptions: options });
+          } else {
+            toast.error('Failed to fetch company options');
+          }
+        } catch (error) {
+          console.error('Error fetching company options:', error);
+          toast.error('Failed to fetch company options');
+        }
+      };
     
       handleInputChange = (e) => {
-        this.setState({ searchInput: e.target.value });
+        this.setState({ searchInput: e.target.value,
+                        selectedCompany: ''
+         });
+
       };
     
       handleSubmit = async (e) => {
@@ -122,13 +142,13 @@ export default class App extends React.Component {
       };
     
   render() {
-    let { data, columns, searchInput, selectedCompany } = this.state;
+    let { data, columns, searchInput, selectedCompany, companyOptions } = this.state;
     return (
       <div>
         <br />
         <form onSubmit={this.handleSubmit}>
           <Input
-            size="large"
+            size="medium"
             name="searchInput"
             value={searchInput || ""}
             onChange={this.handleInputChange}
@@ -138,13 +158,13 @@ export default class App extends React.Component {
           <br />
           <br />
           <Dropdown
-            placeholder="Select Company"
-            fluid
-            selection
-            options={companyOptions}
-            value={selectedCompany}
-            onChange={this.handleCompanyChange}
-          />
+          placeholder="Select Company"
+          fluid
+          selection
+          options={companyOptions}
+          value={selectedCompany}
+          onChange={this.handleCompanyChange}
+        />
           <br />
           <Button type="submit">Search</Button>
         </form>
