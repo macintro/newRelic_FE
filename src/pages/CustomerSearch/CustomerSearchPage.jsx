@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import { Input, Dropdown, Button } from "semantic-ui-react";
 import { customerLookUp,companyLookUp } from '../../utils/services';
 import ReactTable from "react-table-6";
@@ -175,3 +176,5 @@ export default class CustomerSearchPage extends React.Component {
     );
   }
 }
+const rootElement = document.getElementById("root");
+ReactDOM.render(<CustomerSearchPage />, rootElement);
