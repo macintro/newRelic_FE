@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { Input, Dropdown, Button } from "semantic-ui-react";
 import { customerLookUp,companyLookUp } from '../../utils/services';
 import ReactTable from "react-table-6";
@@ -8,10 +7,7 @@ import 'semantic-ui-css/semantic.min.css';
 import "./CustomerSearchPage.module.css";
 import toast from 'react-hot-toast';
 
-var originalData = [];
-var companyOptions = [];
-
-export default class App extends React.Component {
+export default class CustomerSearchPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -179,6 +175,3 @@ export default class App extends React.Component {
     );
   }
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
