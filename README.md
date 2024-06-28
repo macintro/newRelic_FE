@@ -20,7 +20,7 @@ cd newRelic_FE
 ```
 3. Install project dependencies using npm:
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 4.Launch the development server to start the application on localhost:3000:
 ```bash
