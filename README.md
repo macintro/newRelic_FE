@@ -26,8 +26,31 @@ npm install
 ```bash
 npm start
 ```
+## Project Structure
+# CustomerSearchPage.jsx
+This is the main web page of the application. It includes:
 
-**Notes**
+- An input field for entering a first name or last name to search the database.
+- A dropdown menu to filter results by company.
+- A sortable table that allows you to sort by clicking on the column headers.
+# Configuration
+In the utils folder, you'll find config.js, which determines the environment based on the URL the application is launched under. For this demo, the environment is set to localdev. The configuration also specifies the endpoint for calling the newRelic_BE service, which is responsible for retrieving data from the database.
+
+# API Key
+The config.js file contains the API key needed to call the endpoints within the newRelic_BE service. For simplicity, the secrets are included in the code. In a production application, these secrets should be securely stored in a vault.
+
+# Services
+The services.js file uses Axios to make GET requests to the different endpoints. This handles the interaction between the frontend and the backend services.
+
+# Usage
+- Search for a Customer: Enter a first name or last name in the input field.
+- Filter by Company: Select a company from the dropdown menu.
+- Sort Results: Click on the column headers of the table to sort the data.
+
+## Notes
 - Ensure Node.js and npm are installed on your machine before proceeding with installation.
 - For production deployments, consider storing sensitive information securely, such as using a vault for secrets management.
 - Modify config.js and backend service URLs as needed for different environments.
+- For security and best practices in a production environment, ensure to:
+- Store secrets and API keys in a secure vault.
+- Review and follow security guidelines for handling sensitive information.
